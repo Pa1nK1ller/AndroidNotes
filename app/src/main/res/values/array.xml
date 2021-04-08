@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="notes">
+        <item>Первая заметка</item>
+        <item>Вторая заметка</item>
+        <item>Тест заметка</item>
+
+    </string-array>
+
+    <string-array name="notes_date">
+        <item>11/10/2011</item>
+        <item>11/12/2011</item>
+        <item>12/12/2012</item>
+
+    </string-array>
+
+    <string-array name="textNotes">
+        <item>Тут должен быть текст первой заметки</item>
+        <item>Тут должен быть текст второй заметки</item>
+        <item>Это текст тестовой заметки</item>
+
+    </string-array>
+
+    <string-array name="descriptionNotes">
+        <item>Описание первой заметки</item>
+        <item>Описание второй заметки</item>
+        <item>Описание тестовой заметки</item>
+
+    </string-array>
+
+</resources>
