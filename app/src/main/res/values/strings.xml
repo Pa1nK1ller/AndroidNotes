@@ -5,5 +5,14 @@
     <string name="NameNote">Name note</string>
     <string name="DateNote">Date note</string>
     <string name="DescriptionNote">Description note</string>
+    <string name="settings" translatable="false">settings</string>
+    <string name="main" translatable="false">main</string>
+    <string name="about" translatable="false">about</string>
+    <string name="search" translatable="false">search</string>
+    <string name="add" translatable="false">add</string>
+    <string name="item1" translatable="false">item 1</string>
+    <string name="item2" translatable="false">item 2</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
 </resources>
