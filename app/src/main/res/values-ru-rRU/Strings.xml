@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="NameNote">Название заметки</string>
+    <string name="DateNote">Дата заметки</string>
+    <string name="DescriptionNote">Описание заметки</string>
+</resources>
