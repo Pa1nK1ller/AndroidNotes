@@ -21,10 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.androidnotes.MainActivity;
 import com.example.androidnotes.Navigation;
 import com.example.androidnotes.R;
-import com.example.androidnotes.data.NotesData;
 import com.example.androidnotes.data.NotesSource;
-import com.example.androidnotes.data.NotesSourceImpl;
-import com.example.androidnotes.observe.Observer;
+import com.example.androidnotes.data.NotesSourceFirebaseImpl;
+import com.example.androidnotes.data.NotesSourceResponse;
 import com.example.androidnotes.observe.Publisher;
 
 
@@ -36,16 +35,10 @@ public class NotesFragmentUi extends Fragment {
     private RecyclerView recyclerView;
     private Navigation navigation;
     private Publisher publisher;
-    private boolean moveToLastPosition;
+    private boolean moveToFirstPosition;
 
     public static NotesFragmentUi newInstance() {
         return new NotesFragmentUi();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        data = new NotesSourceImpl(getResources()).init();
     }
 
     @Override
@@ -54,6 +47,8 @@ public class NotesFragmentUi extends Fragment {
         View view = inflater.inflate(R.layout.fragment_notes_new, container, false);
         initView(view);
         setHasOptionsMenu(true);
+        data = new NotesSourceFirebaseImpl().init(notesData -> adapter.notifyDataSetChanged());
+        adapter.setDataSource(data);
         return view;
     }
 
@@ -74,31 +69,49 @@ public class NotesFragmentUi extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.note_menu, menu);
+        inflater.inflate(R.menu.notes_menu, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
+        return onItemSelected(item.getItemId()) || super.onOptionsItemSelected(item);
+    }
+
+    private void initView(View view) {
+        recyclerView = view.findViewById(R.id.recycler_view_lines);
+        initRecyclerView();
+    }
+
+    private boolean onItemSelected(int menuItemId) {
+
+        switch (menuItemId) {
             case R.id.action_add:
                 navigation.addFragment(NotesFragment.newInstance(), true);
-                publisher.subscribe(cardData -> {
-                    data.addCardData(cardData);
+                publisher.subscribe(notesData -> {
+                    data.addCardData(notesData);
                     adapter.notifyItemInserted(data.size() - 1);
-                    moveToLastPosition = true;
+                    moveToFirstPosition = true;
                 });
+                return true;
+            case R.id.action_update:
+                final int updatePosition = adapter.getMenuPosition();
+                navigation.addFragment(NotesFragment.newInstance(data.getCardData(updatePosition)), true);
+                publisher.subscribe(notesData -> {
+                    data.updateCardData(updatePosition, notesData);
+                    adapter.notifyItemChanged(updatePosition);
+                });
+                return true;
+            case R.id.action_delete:
+                int deletePosition = adapter.getMenuPosition();
+                data.deleteCardData(deletePosition);
+                adapter.notifyItemRemoved(deletePosition);
                 return true;
             case R.id.action_clear:
                 data.clearCardData();
                 adapter.notifyDataSetChanged();
                 return true;
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void initView(View view) {
-        recyclerView = view.findViewById(R.id.recycler_view_lines);
-        initRecyclerView();
+        return false;
     }
 
     private void initRecyclerView() {
@@ -107,7 +120,7 @@ public class NotesFragmentUi extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new NotesAdapter(data, this);
+        adapter = new NotesAdapter(this);
         recyclerView.setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL);
@@ -115,12 +128,12 @@ public class NotesFragmentUi extends Fragment {
         recyclerView.addItemDecoration(itemDecoration);
 
 
-        if (moveToLastPosition) {
-            recyclerView.smoothScrollToPosition(data.size() - 1);
-            moveToLastPosition = false;
+        if (moveToFirstPosition && data.size() > 0) {
+            recyclerView.scrollToPosition(0);
+            moveToFirstPosition = false;
         }
 
-        adapter.SetOnItemClickListener((view, position) -> Toast.makeText(getContext(), String.format("Позиция - %d", position), Toast.LENGTH_SHORT).show());
+        adapter.setOnItemClickListener((view, position) -> Toast.makeText(getContext(), String.format("Позиция - %d", position), Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -132,23 +145,7 @@ public class NotesFragmentUi extends Fragment {
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        final int position = adapter.getMenuPosition();
-        switch (item.getItemId()) {
-            case R.id.action_update:
-                navigation.addFragment(NotesFragment.newInstance(data.getCardData(position)), true);
-                publisher.subscribe(new Observer() {
-                    @Override
-                    public void updateCardData(NotesData notesData) {
-                        data.updateCardData(position, notesData);
-                        adapter.notifyItemChanged(position);
-                    }
-                });
-                return true;
-            case R.id.action_delete:
-                data.deleteCardData(position);
-                adapter.notifyItemRemoved(position);
-                return true;
-        }
-        return super.onContextItemSelected(item);
+        return onItemSelected(item.getItemId()) || super.onContextItemSelected(item);
+
     }
 }

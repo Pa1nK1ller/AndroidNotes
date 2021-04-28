@@ -1,6 +1,8 @@
 package com.example.androidnotes.data;
 
 public interface NotesSource {
+    NotesSource init(NotesSourceResponse notesSourceResponse);
+
     NotesData getCardData(int position);
 
     int size();

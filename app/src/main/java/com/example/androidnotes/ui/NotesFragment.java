@@ -38,7 +38,6 @@ public class NotesFragment extends Fragment {
         return fragment;
     }
 
-    // Для добавления новых данных
     public static NotesFragment newInstance() {
         NotesFragment fragment = new NotesFragment();
         return fragment;
@@ -79,7 +78,7 @@ public class NotesFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        notesData = collectCardData();
+        notesData = collectNoteData();
     }
 
     @Override
@@ -88,17 +87,18 @@ public class NotesFragment extends Fragment {
         publisher.notifySingle(notesData);
     }
 
-    private NotesData collectCardData() {
+    private NotesData collectNoteData() {
         String title = this.title.getText().toString();
         String description = this.description.getText().toString();
         Date date = getDateFromDatePicker();
-        boolean like;
         if (notesData != null) {
-            like = notesData.isLike();
+            NotesData answer;
+            answer = new NotesData(title, description, notesData.isLike(), date);
+            answer.setId(notesData.getId());
+            return answer;
         } else {
-            like = false;
+            return new NotesData(title, description, false, date);
         }
-        return new NotesData(title, description, like, date);
     }
 
     private Date getDateFromDatePicker() {

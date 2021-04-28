@@ -18,14 +18,18 @@ import java.text.SimpleDateFormat;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
 
-    private final NotesSource dataSource;
+    private NotesSource dataSource;
     private final NotesFragmentUi fragment;
     private OnItemClickListener itemClickListener;
     private int menuPosition;
 
-    public NotesAdapter(NotesSource dataSource, NotesFragmentUi fragment) {
-        this.dataSource = dataSource;
+    public NotesAdapter(NotesFragmentUi fragment) {
         this.fragment = fragment;
+    }
+
+    public void setDataSource(NotesSource dataSource) {
+        this.dataSource = dataSource;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -46,7 +50,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return dataSource.size();
     }
 
-    public void SetOnItemClickListener(OnItemClickListener itemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
 
