@@ -1,3 +1,8 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="nav_header_height">200dp</dimen>
+    <dimen name="nav_header_dimen">42sp</dimen>
+    <dimen name="textDescription" >20sp</dimen>
+    <dimen name="textTitle">32sp</dimen>
+    <dimen name="textDate">12sp</dimen>
 </resources>
