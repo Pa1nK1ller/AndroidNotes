@@ -1,6 +1,8 @@
 package com.example.androidnotes.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -23,8 +25,8 @@ import com.example.androidnotes.Navigation;
 import com.example.androidnotes.R;
 import com.example.androidnotes.data.NotesSource;
 import com.example.androidnotes.data.NotesSourceFirebaseImpl;
-import com.example.androidnotes.data.NotesSourceResponse;
 import com.example.androidnotes.observe.Publisher;
+
 
 
 public class NotesFragmentUi extends Fragment {
@@ -102,16 +104,49 @@ public class NotesFragmentUi extends Fragment {
                 });
                 return true;
             case R.id.action_delete:
-                int deletePosition = adapter.getMenuPosition();
-                data.deleteCardData(deletePosition);
-                adapter.notifyItemRemoved(deletePosition);
+                deleteAlertDialog();
                 return true;
             case R.id.action_clear:
-                data.clearCardData();
-                adapter.notifyDataSetChanged();
+                clearAlertDialog();
                 return true;
         }
         return false;
+    }
+
+    private void deleteAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.delete_confirmation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    int deletePosition = adapter.getMenuPosition();
+                    data.deleteCardData(deletePosition);
+                    adapter.notifyItemRemoved(deletePosition);
+                    Toast.makeText(getActivity(), R.string.delete_note, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    Toast.makeText(getActivity(),R.string.delete_note_cancel, Toast.LENGTH_SHORT).show();
+                    dialog.cancel();
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void clearAlertDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.clear_confirmation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    data.clearCardData();
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(getActivity(), R.string.delete_note, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.no, (dialog, which) -> {
+                    Toast.makeText(getActivity(),R.string.delete_note_cancel, Toast.LENGTH_SHORT).show();
+                    dialog.cancel();
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void initRecyclerView() {
@@ -146,6 +181,5 @@ public class NotesFragmentUi extends Fragment {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         return onItemSelected(item.getItemId()) || super.onContextItemSelected(item);
-
     }
 }
